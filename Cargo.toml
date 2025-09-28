@@ -1,0 +1,10 @@
+[package]
+name = "sfml-demo-project"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sfml = "0.24.0"
+egui-sfml = "0.9.0"
+image = { version = "0.25.8", features = ["default-formats"] }
+egui_extras = { version = "0.31.1", features = ["all_loaders"] }
