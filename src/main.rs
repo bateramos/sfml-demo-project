@@ -16,6 +16,8 @@ fn main() {
 
     let new_view = View::from_rect(FloatRect::new(0.,0., 420., 680.)).unwrap();
 
+    let image_to_render = Some(Box::new(load_with_egui(sfegui.context(), "city.png")));
+
     loop {
         window.set_view(&new_view);
         window.clear(Color::BLACK);
@@ -33,15 +35,14 @@ fn main() {
         }
 
         let draw_input = sfegui.run(&mut window, |_, ctx| {
-            egui_extras::install_image_loaders(ctx);
+            let box_image = image_to_render.clone();
             egui_sfml::egui::Area::new("example_ui_area".into())
                 .fixed_pos(egui_sfml::egui::Pos2::new(100., 100.))
                 .show(ctx, |ui| {
                     if ui.button("Click here to load Texture with egui and image").clicked() {
-                        load_with_egui(ctx, "city.png");
                     }
-                    if ui.button("Click here to load Texture with egui-extras").clicked() {
-                        load_with_egui_extras(ctx, "city.png");
+                    if let Some(image) = box_image {
+                        ui.image(&image.unwrap());
                     }
                 });
         }).unwrap();
@@ -64,19 +65,5 @@ fn main() {
         );
 
         return Some(ctx.load_texture("texture", color_image, Default::default()));
-    }
-
-    fn load_with_egui_extras(ctx: &egui_sfml::egui::Context, name: &str) -> Option<egui_sfml::egui::TextureHandle> {
-        let img_bytes = std::fs::read(name).expect("failed to read image file");
-
-        match egui_extras::image::load_image_bytes(&img_bytes) {
-            Ok(color_image) => {
-                return Some(ctx.load_texture("my_texture", color_image, Default::default()));
-            },
-            Err(error) => {
-                println!("error on egui_extras image loading {:?}", error);
-                return None
-            },
-        }
     }
 }
